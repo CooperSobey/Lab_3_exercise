@@ -137,7 +137,6 @@ public:
         SharedPtr(other).swap(*this);
     }
 
-
     //void swap
     void swap(SharedPtr<T>& other) {
         std::swap (sPtr, other.sPtr);
