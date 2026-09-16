@@ -72,7 +72,7 @@ public:
         }
     }
     ~SharedPtr() {
-        if (sPtr) {
+        if (cbPtr) {
             cbPtr->decrement();
             if (cbPtr->refCount() == 0) {
                 delete cbPtr;
@@ -127,10 +127,40 @@ public:
     // operator bool()
     operator bool() const {return sPtr != nullptr;}
 
-private:
-    T *sPtr;
-    ControlBlockBase *cbPtr;
+    //void reset
+    void reset () {
+        SharedPtr().swap(*this);
+    }
 
+    //void reset overload
+    void reset (T* other = nullptr) {
+        SharedPtr(other).swap(*this);
+    }
+
+
+    //void swap
+    void swap(SharedPtr<T>& other) {
+        std::swap (sPtr, other.sPtr);
+        std::swap (cbPtr, other.cbPtr);
+    }
+
+    long useCount() const {
+        if (cbPtr) {
+            return cbPtr->refCount();
+        }
+        return 0;
+    }
+
+private:
+    T* sPtr;
+    ControlBlockBase* cbPtr;
+
+};
+
+template <typename T, typename... Args>
+SharedPtr<T> makeSharedBasic(Args&&... args) {
+    T* ptr = new T(std::forward<Args>(args)...);
+    return SharedPtr<T>(ptr);
 };
 
 #endif
