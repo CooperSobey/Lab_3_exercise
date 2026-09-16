@@ -88,25 +88,44 @@ public:
     }
 
     //Move ctor
-    SharedPtr (SharedPtr&& other) : sPtr (other.sPtr) {
+    SharedPtr (SharedPtr&& other) : sPtr (other.sPtr), cbPtr (other.cbPtr) {
         other.sPtr = nullptr;
+        other.cbPtr = nullptr;
     }
 
     //Copy Assignment
     SharedPtr& operator=(const SharedPtr& other)
     {
-         SharedPtr otherClone(other);
+        SharedPtr otherClone(other);
 
-         std::swap (sPtr, otherClone.sPtr);
+        std::swap (sPtr, otherClone.sPtr);
         std::swap (cbPtr, otherClone.cbPtr);
-         return *this;
+        return *this;
      }
 
     //Move Assignment
     SharedPtr& operator=(SharedPtr&& other) {
         std::swap (sPtr, other.sPtr);
+        std::swap (cbPtr, other.cbPtr);
         return *this;
     }
+
+    //T* get()
+    T* get() const {return sPtr;}
+
+    //operator->
+    T* operator->() const {return sPtr;}
+
+    //Dereference op
+    T& operator*() const { return *sPtr;}
+
+    //== op
+    bool operator==(const SharedPtr& other) const {
+        return sPtr == other.sPtr;
+    }
+
+    // operator bool()
+    operator bool() const {return sPtr != nullptr;}
 
 private:
     T *sPtr;
